@@ -24,7 +24,7 @@ func LoadConfig() (*Config, error) {
 		DbUser: os.Getenv("DB_USER"),
 		DbPort: os.Getenv("DB_PORT"),
 		DbName: os.Getenv("DB_NAME"),
-		DbPass: os.Getenv("DB_PASS"),
+		DbPass: os.Getenv("DB_PASSWORD"),
 	}
 
 	return config, nil
