@@ -22,7 +22,7 @@ func NewUserServiceImpl(userRepo repositories.UserRepository, externalAPIURL str
 	}
 }
 
-func (s *UserServiceImpl) CreateUser(passportNumber string) (*models.User, error) {
+func (s *UserServiceImpl) CreateUser(passportNumber string) (*dto.UserResponse, error) {
 	passportSerie, err := strconv.Atoi(passportNumber[:4])
 	if err != nil {
 		return nil, err
@@ -56,29 +56,100 @@ func (s *UserServiceImpl) CreateUser(passportNumber string) (*models.User, error
 		return nil, err
 	}
 
-	return user, nil
+	return &dto.UserResponse{
+		ID:             user.ID,
+		PassportNumber: user.PassportNumber,
+		Surname:        user.Surname,
+		Name:           user.Name,
+		Patronymic:     user.Patronymic,
+		Address:        user.Address,
+	}, nil
 }
 
-func (s *UserServiceImpl) GetUserById(id uint) (*models.User, error) {
-	return s.userRepo.GetById(id)
+func (s *UserServiceImpl) GetUserById(id uint) (*dto.UserResponse, error) {
+	user, err := s.userRepo.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UserResponse{
+		ID:             user.ID,
+		PassportNumber: user.PassportNumber,
+		Surname:        user.Surname,
+		Name:           user.Name,
+		Patronymic:     user.Patronymic,
+		Address:        user.Address,
+	}, nil
 }
 
-func (s *UserServiceImpl) GetAllUsers() ([]models.User, error) {
-	return s.userRepo.GetAll()
+func (s *UserServiceImpl) GetAllUsers() ([]dto.UserResponse, error) {
+	users, err := s.userRepo.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var userResponses []dto.UserResponse
+	for _, user := range users {
+		userResponses = append(userResponses, dto.UserResponse{
+			ID:             user.ID,
+			PassportNumber: user.PassportNumber,
+			Surname:        user.Surname,
+			Name:           user.Name,
+			Patronymic:     user.Patronymic,
+			Address:        user.Address,
+		})
+	}
+
+	return userResponses, nil
 }
 
-func (s *UserServiceImpl) GetUsersWithFilters(filters map[string]interface{}) ([]models.User, error) {
-	return s.userRepo.GetAllWithFilters(filters)
-}
+func (s *UserServiceImpl) UpdateUser(userId uint, userUpdateRequest dto.UpdateUserRequest) (*dto.UserResponse, error) {
+	user, err := s.userRepo.GetById(userId)
+	if err != nil {
+		return nil, err
+	}
 
-func (s *UserServiceImpl) GetUsersWithPagination(page int, pageSize int) ([]models.User, error) {
-	return s.userRepo.GetWithPagination(page, pageSize)
-}
+	user.Name = userUpdateRequest.Name
+	user.Surname = userUpdateRequest.Surname
+	user.Patronymic = userUpdateRequest.Patronymic
+	user.Address = userUpdateRequest.Address
 
-func (s *UserServiceImpl) UpdateUser(user *models.User) error {
-	return s.userRepo.Update(user)
+	if err := s.userRepo.Update(user); err != nil {
+		return nil, err
+	}
+
+	return &dto.UserResponse{
+		ID:             user.ID,
+		PassportNumber: user.PassportNumber,
+		Surname:        user.Surname,
+		Name:           user.Name,
+		Patronymic:     user.Patronymic,
+		Address:        user.Address,
+	}, nil
 }
 
 func (s *UserServiceImpl) DeleteUser(id uint) error {
 	return s.userRepo.Delete(id)
+}
+
+func (s *UserServiceImpl) GetUsersWithFiltersAndPagination(filters map[string]interface{}, page int, pageSize int) ([]dto.UserResponse, error) {
+	users, err := s.userRepo.GetAllWithFiltersAndPagination(filters, page, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	var userResponses []dto.UserResponse
+	for _, user := range users {
+		userResponse := dto.UserResponse{
+			ID:             user.ID,
+			PassportNumber: user.PassportNumber,
+			Surname:        user.Surname,
+			Name:           user.Name,
+			Patronymic:     user.Patronymic,
+			Address:        user.Address,
+		}
+		userResponses = append(userResponses, userResponse)
+	}
+
+	return userResponses, nil
 }

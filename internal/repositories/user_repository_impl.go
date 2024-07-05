@@ -32,7 +32,7 @@ func (r *userRepository) GetAll() ([]models.User, error) {
 	return users, nil
 }
 
-func (r *userRepository) GetWithFilters(filters map[string]interface{}) ([]models.User, error) {
+func (r *userRepository) GetAllWithFiltersAndPagination(filters map[string]interface{}, page int, pageSize int) ([]models.User, error) {
 	var users []models.User
 	query := r.db.Model(&models.User{})
 
@@ -40,31 +40,7 @@ func (r *userRepository) GetWithFilters(filters map[string]interface{}) ([]model
 		query = query.Where(fmt.Sprintf("%s = ?", key), value)
 	}
 
-	result := query.Find(&users)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return users, nil
-}
-
-func (r *userRepository) GetAllWithFilters(filters map[string]interface{}) ([]models.User, error) {
-	var users []models.User
-	query := r.db.Model(&models.User{})
-
-	for key, value := range filters {
-		query = query.Where(fmt.Sprintf("%s = ?", key), value)
-	}
-
-	result := query.Find(&users)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return users, nil
-}
-
-func (r *userRepository) GetWithPagination(page int, pageSize int) ([]models.User, error) {
-	var users []models.User
-	result := r.db.Offset((page - 1) * pageSize).Limit(pageSize).Find(&users)
+	result := query.Offset((page - 1) * pageSize).Limit(pageSize).Find(&users)
 	if result.Error != nil {
 		return nil, result.Error
 	}
