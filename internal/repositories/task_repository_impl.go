@@ -47,9 +47,9 @@ func (r *TaskRepositoryImpl) StopTask(taskID uint) (*models.Task, error) {
 	return &task, nil
 }
 
-func (r *TaskRepositoryImpl) GetUserTasks(userID uint, startDate time.Time, endDate time.Time) (*[]models.Task, error) {
+func (r *TaskRepositoryImpl) GetUserTasks(userID uint, startDate time.Time, endDate time.Time) ([]models.Task, error) {
 	var tasks []models.Task
 	err := r.db.Where("user_id = ? AND start_time >= ? AND end_time <= ?", userID, startDate, endDate).
 		Order("hours DESC, minutes DESC").Find(&tasks).Error
-	return &tasks, err
+	return tasks, err
 }
