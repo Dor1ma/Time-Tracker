@@ -6,15 +6,19 @@ import (
 	"gorm.io/gorm"
 )
 
-type userRepository struct {
+type UserRepositoryImpl struct {
 	db *gorm.DB
 }
 
-func (r *userRepository) Create(user *models.User) error {
+func NewUserRepository(db *gorm.DB) *UserRepositoryImpl {
+	return &UserRepositoryImpl{db: db}
+}
+
+func (r *UserRepositoryImpl) Create(user *models.User) error {
 	return r.db.Create(user).Error
 }
 
-func (r *userRepository) GetById(id uint) (*models.User, error) {
+func (r *UserRepositoryImpl) GetById(id uint) (*models.User, error) {
 	var user models.User
 	result := r.db.First(&user, id)
 	if result.Error != nil {
@@ -23,7 +27,7 @@ func (r *userRepository) GetById(id uint) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) GetAll() ([]models.User, error) {
+func (r *UserRepositoryImpl) GetAll() ([]models.User, error) {
 	var users []models.User
 	result := r.db.Find(&users)
 	if result.Error != nil {
@@ -32,7 +36,7 @@ func (r *userRepository) GetAll() ([]models.User, error) {
 	return users, nil
 }
 
-func (r *userRepository) GetAllWithFiltersAndPagination(filters map[string]interface{}, page int, pageSize int) ([]models.User, error) {
+func (r *UserRepositoryImpl) GetAllWithFiltersAndPagination(filters map[string]interface{}, page int, pageSize int) ([]models.User, error) {
 	var users []models.User
 	query := r.db.Model(&models.User{})
 
@@ -47,10 +51,10 @@ func (r *userRepository) GetAllWithFiltersAndPagination(filters map[string]inter
 	return users, nil
 }
 
-func (r *userRepository) Update(user *models.User) error {
+func (r *UserRepositoryImpl) Update(user *models.User) error {
 	return r.db.Save(user).Error
 }
 
-func (r *userRepository) Delete(id uint) error {
+func (r *UserRepositoryImpl) Delete(id uint) error {
 	return r.db.Delete(&models.User{}, id).Error
 }
