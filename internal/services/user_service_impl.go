@@ -63,15 +63,15 @@ func (s *UserServiceImpl) GetUserById(id uint) (*models.User, error) {
 	return s.userRepo.GetById(id)
 }
 
-func (s *UserServiceImpl) GetAllUsers() (*[]models.User, error) {
+func (s *UserServiceImpl) GetAllUsers() ([]models.User, error) {
 	return s.userRepo.GetAll()
 }
 
-func (s *UserServiceImpl) GetUsersWithFilters(filters map[string]interface{}) (*[]models.User, error) {
+func (s *UserServiceImpl) GetUsersWithFilters(filters map[string]interface{}) ([]models.User, error) {
 	return s.userRepo.GetAllWithFilters(filters)
 }
 
-func (s *UserServiceImpl) GetUsersWithPagination(page int, pageSize int) (*[]models.User, error) {
+func (s *UserServiceImpl) GetUsersWithPagination(page int, pageSize int) ([]models.User, error) {
 	return s.userRepo.GetWithPagination(page, pageSize)
 }
 
