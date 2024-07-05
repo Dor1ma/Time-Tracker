@@ -7,15 +7,21 @@ import (
 	"github.com/Dor1ma/Time-Tracker/internal/repositories"
 	"github.com/Dor1ma/Time-Tracker/internal/services"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
+	"os"
 )
 
 func Start() {
+	log := logrus.New()
+	log.Out = os.Stdout
+	log.SetLevel(logrus.DebugLevel)
+
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed to load config: %v", err)
+		return
 	}
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
@@ -30,18 +36,19 @@ func Start() {
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
+		return
 	}
 
-	RunMigration(dsn)
+	RunMigration(dsn, log)
 
-	userRepository := repositories.NewUserRepository(db)
-	taskRepository := repositories.NewTaskRepositoryImpl(db)
+	userRepository := repositories.NewUserRepositoryImpl(db, log)
+	taskRepository := repositories.NewTaskRepositoryImpl(db, log)
 
-	userService := services.NewUserServiceImpl(userRepository, cfg.ExternalAPIURL)
-	taskService := services.NewTaskServiceImpl(taskRepository)
+	userService := services.NewUserServiceImpl(userRepository, cfg.ExternalAPIURL, log)
+	taskService := services.NewTaskServiceImpl(taskRepository, log)
 
-	userHandler := handlers.NewUserHandler(userService)
-	taskHandler := handlers.NewTaskHandler(taskService)
+	userHandler := handlers.NewUserHandler(userService, log)
+	taskHandler := handlers.NewTaskHandler(taskService, log)
 
 	router := gin.Default()
 
@@ -62,9 +69,9 @@ func Start() {
 
 	err = router.Run(":8080")
 	if err != nil {
-		log.Fatalf("Error in gin run function", err.Error())
+		log.Fatalf("Error in gin run function", err)
 		return
 	}
 
-	log.Println("Gin server has started")
+	log.Infof("Gin server has started")
 }
