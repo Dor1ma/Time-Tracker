@@ -7,11 +7,12 @@ import (
 )
 
 type Config struct {
-	DbHost string
-	DbUser string
-	DbPort string
-	DbName string
-	DbPass string
+	DbHost         string
+	DbUser         string
+	DbPort         string
+	DbName         string
+	DbPass         string
+	ExternalAPIURL string
 }
 
 func LoadConfig() (*Config, error) {
@@ -20,11 +21,12 @@ func LoadConfig() (*Config, error) {
 	}
 
 	config := &Config{
-		DbHost: os.Getenv("DB_HOST"),
-		DbUser: os.Getenv("DB_USER"),
-		DbPort: os.Getenv("DB_PORT"),
-		DbName: os.Getenv("DB_NAME"),
-		DbPass: os.Getenv("DB_PASSWORD"),
+		DbHost:         os.Getenv("DB_HOST"),
+		DbUser:         os.Getenv("DB_USER"),
+		DbPort:         os.Getenv("DB_PORT"),
+		DbName:         os.Getenv("DB_NAME"),
+		DbPass:         os.Getenv("DB_PASSWORD"),
+		ExternalAPIURL: os.Getenv("EXTERNAL_API_URL"),
 	}
 
 	return config, nil
