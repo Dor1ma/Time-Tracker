@@ -1,9 +1,9 @@
 package services
 
-import "github.com/Dor1ma/Time-Tracker/internal/models"
+import "github.com/Dor1ma/Time-Tracker/internal/dto"
 
 type TaskService interface {
-	StartTask(userID uint, taskName string) (*models.Task, error)
-	StopTask(taskID uint) (*models.Task, error)
-	GetUserTasks(userID uint, startDate string, endDate string) ([]models.Task, error)
+	StartTask(request dto.StartTaskRequest) (*dto.TaskResponse, error)
+	StopTask(request dto.StopTaskRequest) (*dto.TaskResponse, error)
+	GetUserTasks(userID uint, startDate string, endDate string) ([]dto.TaskResponse, error)
 }
