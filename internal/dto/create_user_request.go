@@ -1,5 +1,5 @@
 package dto
 
 type CreateUserRequest struct {
-	PassportNumber string `json:"passport_number" binding:"required"`
+	PassportNumber string `json:"passportNumber" binding:"required"`
 }
