@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Dor1ma/Time-Tracker/config"
+	_ "github.com/Dor1ma/Time-Tracker/docs"
 	"github.com/Dor1ma/Time-Tracker/internal/handlers"
 	"github.com/Dor1ma/Time-Tracker/internal/repositories"
 	"github.com/Dor1ma/Time-Tracker/internal/services"
@@ -37,7 +38,7 @@ func Start() {
 		cfg.DbPort)
 
 	var db *gorm.DB
-	var retries = 3
+	var retries = 5
 	var attempt int
 
 	for attempt = 1; attempt <= retries; attempt++ {

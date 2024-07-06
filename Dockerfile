@@ -18,10 +18,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 COPY --from=builder /app/main .
-
+COPY --from=builder /app/. .
 COPY .env .
-
-COPY --from=builder /app/migrations ./migrations
-COPY --from=builder /app/docs ./docs
 
 CMD ./main
