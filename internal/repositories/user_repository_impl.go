@@ -58,19 +58,22 @@ func (r *UserRepositoryImpl) GetAllWithFiltersAndPagination(filters map[string]i
 	var users []models.User
 	query := r.db.Model(&models.User{})
 
+	r.logger.Debugf("GetAllWithFiltersAndPagination: original filters: %v", filters)
+	delete(filters, "page")
+	delete(filters, "pageSize")
+
 	for key, value := range filters {
 		query = query.Where(fmt.Sprintf("%s = ?", key), value)
 	}
 
+	r.logger.Debugf("GetAllWithFiltersAndPagination: query with filters: %v", query)
 	result := query.Offset((page - 1) * pageSize).Limit(pageSize).Find(&users)
 	if result.Error != nil {
-		r.logger.Errorf("GetAllWithFiltersAndPagination: failed to fetch users with filters and pagination from database: %v",
-			result.Error)
+		r.logger.Errorf("GetAllWithFiltersAndPagination: failed to fetch users with filters and pagination from database: %v", result.Error)
 		return nil, result.Error
 	}
 
-	r.logger.Infof("GetAllWithFiltersAndPagination: successfully fetched %d users with filters and pagination from database",
-		len(users))
+	r.logger.Infof("GetAllWithFiltersAndPagination: successfully fetched %d users with filters and pagination from database", len(users))
 	return users, nil
 }
 
