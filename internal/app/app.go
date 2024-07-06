@@ -69,7 +69,7 @@ func Start() {
 
 	err = router.Run(":8080")
 	if err != nil {
-		log.Fatalf("Error in gin run function", err)
+		log.Fatalf("Error in gin run function: %v", err)
 		return
 	}
 
