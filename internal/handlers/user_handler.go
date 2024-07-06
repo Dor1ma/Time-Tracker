@@ -21,6 +21,17 @@ func NewUserHandler(userService services.UserService, logger *logrus.Logger) *Us
 	}
 }
 
+// CreateUser godoc
+// @Summary Create a new user
+// @Description Create a new user with a given passport number
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body dto.CreateUserRequest true "Create user request"
+// @Success 200 {object} models.User
+// @Failure 400 {object} map[string]any
+// @Failure 500 {object} map[string]any
+// @Router /users [post]
 func (h *UserHandler) CreateUser(c *gin.Context) {
 	var req dto.CreateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -41,6 +52,18 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
+// UpdateUser godoc
+// @Summary Update an existing user
+// @Description Update an existing user with given details
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Param user body dto.UpdateUserRequest true "Update user request"
+// @Success 200 {object} models.User
+// @Failure 400 {object} map[string]any
+// @Failure 500 {object} map[string]any
+// @Router /users/{id} [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -68,6 +91,17 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// DeleteUser godoc
+// @Summary Delete an existing user
+// @Description Delete an existing user by ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Success 200 {object} map[string]any
+// @Failure 400 {object} map[string]any
+// @Failure 500 {object} map[string]any
+// @Router /users/{id} [delete]
 func (h *UserHandler) DeleteUser(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -88,6 +122,18 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": nil})
 }
 
+// GetUsers godoc
+// @Summary Get all users
+// @Description Get all users with optional filters and pagination
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param pageSize query int false "Page size"
+// @Param filters query string false "Filters in JSON format"
+// @Success 200 {array} models.User
+// @Failure 500 {object} map[string]any
+// @Router /users [get]
 func (h *UserHandler) GetUsers(c *gin.Context) {
 	h.logger.Info("GetUsers: fetching all users")
 	filters := make(map[string]interface{})

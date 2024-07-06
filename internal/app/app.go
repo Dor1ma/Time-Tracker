@@ -3,11 +3,14 @@ package app
 import (
 	"fmt"
 	"github.com/Dor1ma/Time-Tracker/config"
+	_ "github.com/Dor1ma/Time-Tracker/docs"
 	"github.com/Dor1ma/Time-Tracker/internal/handlers"
 	"github.com/Dor1ma/Time-Tracker/internal/repositories"
 	"github.com/Dor1ma/Time-Tracker/internal/services"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"os"
@@ -51,6 +54,7 @@ func Start() {
 	taskHandler := handlers.NewTaskHandler(taskService, log)
 
 	router := gin.Default()
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	userRoutes := router.Group("/users")
 	{

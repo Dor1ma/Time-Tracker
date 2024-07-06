@@ -21,6 +21,17 @@ func NewTaskHandler(taskService services.TaskService, logger *logrus.Logger) *Ta
 	}
 }
 
+// StartTask godoc
+// @Summary Start a new task
+// @Description Start a new task for a user
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param task body dto.StartTaskRequest true "Start task request"
+// @Success 200 {object} models.Task
+// @Failure 400 {object} map[string]any
+// @Failure 500 {object} map[string]any
+// @Router /tasks/start [post]
 func (h *TaskHandler) StartTask(c *gin.Context) {
 	var request dto.StartTaskRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -41,6 +52,17 @@ func (h *TaskHandler) StartTask(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
+// StopTask godoc
+// @Summary Stop an existing task
+// @Description Stop an existing task for a user
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param task body dto.StopTaskRequest true "Stop task request"
+// @Success 200 {object} models.Task
+// @Failure 400 {object} map[string]any
+// @Failure 500 {object} map[string]any
+// @Router /tasks/stop [post]
 func (h *TaskHandler) StopTask(c *gin.Context) {
 	var request dto.StopTaskRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -61,6 +83,19 @@ func (h *TaskHandler) StopTask(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
+// GetUserTasks godoc
+// @Summary Get user tasks
+// @Description Get tasks for a user within a specified date range, sorted by total time spent
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param user_id path int true "User ID"
+// @Param start_date query string true "Start date in format YYYY-MM-DD"
+// @Param end_date query string true "End date in format YYYY-MM-DD"
+// @Success 200 {array} models.Task
+// @Failure 400 {object} map[string]any
+// @Failure 500 {object} map[string]any
+// @Router /users/{user_id}/tasks [get]
 func (h *TaskHandler) GetUserTasks(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("user_id"))
 	if err != nil {
