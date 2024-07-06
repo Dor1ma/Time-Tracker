@@ -2,8 +2,9 @@ package app
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/Dor1ma/Time-Tracker/config"
-	_ "github.com/Dor1ma/Time-Tracker/docs"
 	"github.com/Dor1ma/Time-Tracker/internal/handlers"
 	"github.com/Dor1ma/Time-Tracker/internal/repositories"
 	"github.com/Dor1ma/Time-Tracker/internal/services"
@@ -13,6 +14,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"os"
 )
 
@@ -35,10 +37,23 @@ func Start() {
 		cfg.DbPort)
 
 	var db *gorm.DB
+	var retries = 3
+	var attempt int
 
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+	for attempt = 1; attempt <= retries; attempt++ {
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+			Logger: logger.Default.LogMode(logger.Silent),
+		})
+		if err != nil {
+			log.Errorf("Attempt %d failed to connect to database: %v", attempt, err)
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		break
+	}
+
+	if attempt > retries {
+		log.Fatalf("Failed to connect to database after %d attempts", retries)
 		return
 	}
 
