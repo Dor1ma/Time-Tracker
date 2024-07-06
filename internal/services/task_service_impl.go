@@ -56,13 +56,13 @@ func (s *TaskServiceImpl) StopTask(request dto.StopTaskRequest) (*dto.TaskRespon
 
 func (s *TaskServiceImpl) GetUserTasks(userID uint, startDate string, endDate string) ([]dto.TaskResponse, error) {
 	s.logger.Infof("GetUserTasks: fetching tasks for user ID: %d, start date: %s, end date: %s", userID, startDate, endDate)
-	start, err := time.Parse(time.RFC3339, startDate)
+	start, err := time.Parse("2006-01-02", startDate)
 	if err != nil {
 		s.logger.Debugf("GetUserTasks: invalid start date: %v", err)
 		return nil, err
 	}
 
-	end, err := time.Parse(time.RFC3339, endDate)
+	end, err := time.Parse("2006-01-02", endDate)
 	if err != nil {
 		s.logger.Debugf("GetUserTasks: invalid end date: %v", err)
 		return nil, err
@@ -80,6 +80,8 @@ func (s *TaskServiceImpl) GetUserTasks(userID uint, startDate string, endDate st
 			ID:        task.ID,
 			UserID:    task.UserID,
 			TaskName:  task.TaskName,
+			Hours:     task.Hours,
+			Minutes:   task.Minutes,
 			StartTime: task.StartTime.Format(time.RFC3339),
 			EndTime:   task.EndTime.Format(time.RFC3339),
 		}
